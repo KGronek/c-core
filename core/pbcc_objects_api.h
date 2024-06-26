@@ -107,6 +107,7 @@ enum pubnub_res pbcc_get_memberships_prep(struct pbcc_context* pb,
                                           size_t limit,
                                           char const* start,
                                           char const* end,
+                                          char const* filter,
                                           enum pubnub_tribool count,
                                           enum pubnub_trans pt);
 
@@ -129,6 +130,7 @@ enum pubnub_res pbcc_get_members_prep(struct pbcc_context* pb,
                                       size_t limit,
                                       char const* start,
                                       char const* end,
+                                      char const* filter,
                                       enum pubnub_tribool count,
                                       enum pubnub_trans pt);
 

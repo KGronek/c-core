@@ -282,12 +282,13 @@ enum pubnub_res pubnub_remove_channelmetadata(pubnub_t* pb, char const* channel_
 }
 
 
-enum pubnub_res pubnub_get_memberships(pubnub_t* pb,
+enum pubnub_res pubnub_get_memberships_with_filter(pubnub_t* pb,
                                        char const* uuid_metadataid,
                                        char const* include,
                                        size_t limit,
                                        char const* start,
                                        char const* end,
+                                       char const* filter,
                                        enum pubnub_tribool count)
 {
     enum pubnub_res rslt;
@@ -306,6 +307,7 @@ enum pubnub_res pubnub_get_memberships(pubnub_t* pb,
                                      limit,
                                      start,
                                      end,
+                                     filter,
                                      count, 
                                      pb->trans);
     if (PNR_STARTED == rslt) {
@@ -317,6 +319,17 @@ enum pubnub_res pubnub_get_memberships(pubnub_t* pb,
     pubnub_mutex_unlock(pb->monitor);
 
     return rslt;
+}
+
+enum pubnub_res pubnub_get_memberships(pubnub_t* pb,
+                                       char const* uuid_metadataid,
+                                       char const* include,
+                                       size_t limit,
+                                       char const* start,
+                                       char const* end,
+                                       enum pubnub_tribool count)
+{
+    return pubnub_get_memberships_with_filter(pb, uuid_metadataid, include, limit, start, end, NULL, count);
 }
 
 
@@ -405,12 +418,13 @@ enum pubnub_res pubnub_remove_memberships(pubnub_t* pb,
 }
 
 
-enum pubnub_res pubnub_get_members(pubnub_t* pb,
+enum pubnub_res pubnub_get_members_with_filter(pubnub_t* pb,
                                    char const* channel_metadataid,
                                    char const* include,
                                    size_t limit,
                                    char const* start,
                                    char const* end,
+                                   char const* filter,
                                    enum pubnub_tribool count)
 {
     enum pubnub_res rslt;
@@ -429,7 +443,8 @@ enum pubnub_res pubnub_get_members(pubnub_t* pb,
                                  limit,
                                  start,
                                  end,
-                                 count, 
+                                 filter,
+                                 count,
                                  pb->trans);
     if (PNR_STARTED == rslt) {
         pb->trans            = PBTT_GET_MEMBERS;
@@ -442,6 +457,16 @@ enum pubnub_res pubnub_get_members(pubnub_t* pb,
     return rslt;
 }
 
+enum pubnub_res pubnub_get_members(pubnub_t* pb,
+                                   char const* channel_metadataid,
+                                   char const* include,
+                                   size_t limit,
+                                   char const* start,
+                                   char const* end,
+                                   enum pubnub_tribool count)
+{
+    return pubnub_get_members_with_filter(pb, channel_metadataid, include, limit, start, end, NULL, count);
+}
 
 enum pubnub_res pubnub_add_members(pubnub_t* pb, 
                                    char const* channel_metadataid,

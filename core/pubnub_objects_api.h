@@ -152,6 +152,36 @@ PUBNUB_EXTERN enum pubnub_res pubnub_remove_channelmetadata(pubnub_t* pb, char c
     @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if
                you also supply the start parameter. Use NULL if you don’t want to paginate with
                an end bookmark.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned. The filter language is defined in online documentation.
+    @param count Request totalCount to be included in paginated response. By default, totalCount
+                 is omitted.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_get_memberships_with_filter(pubnub_t* pb,
+                                       char const* uuid_metadataid,
+                                       char const* include,
+                                       size_t limit,
+                                       char const* start,
+                                       char const* end,
+                                       char const* filter,
+                                       enum pubnub_tribool count);
+
+
+/** Returns the channel memberships of the user specified by @p uuid_metadataid, optionally including
+    the custom data objects for...
+    @param pb The pubnub context. Can't be NULL
+    @param uuid_metadataid The UUID to retrieve the memberships.
+                   Cannot be NULL.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param limit Number of entities to return in response. Regular values 1 - 100.
+                 If you set `0`, that means “use the default”. At the time of this writing,
+                 default was 100.
+    @param start Previously-returned cursor bookmark for fetching the next page. Use NULL if you
+                 don’t want to paginate with a start bookmark.
+    @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if
+               you also supply the start parameter. Use NULL if you don’t want to paginate with
+               an end bookmark.
     @param count Request totalCount to be included in paginated response. By default, totalCount
                  is omitted.
     @return #PNR_STARTED on success, an error otherwise
@@ -239,6 +269,34 @@ PUBNUB_EXTERN enum pubnub_res pubnub_remove_memberships(pubnub_t* pb,
     @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if
                you also supply the start parameter. Use NULL if you don’t want to paginate with
                an end bookmark.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned. The filter language is defined in online documentation.
+    @param count Request totalCount to be included in paginated response. By default, totalCount
+                 is omitted.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_get_members_with_filter(pubnub_t* pb,
+                                   char const* channel_metadataid,
+                                   char const* include,
+                                   size_t limit,
+                                   char const* start,
+                                   char const* end,
+                                   char const* filter,
+                                   enum pubnub_tribool count);
+
+/** Returns all users in the channel specified with @p channel_metadataid, optionally including
+    the custom data objects for...
+    @param pb The pubnub context. Can't be NULL
+    @param channel_metadataid The Channel ID for which to retrieve the user metadata object.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param limit Number of entities to return in response. Regular values 1 - 100.
+                 If you set `0`, that means “use the default”. At the time of this writing,
+                 default was 100.
+    @param start Previously-returned cursor bookmark for fetching the next page. Use NULL if you
+                 don’t want to paginate with a start bookmark.
+    @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if
+               you also supply the start parameter. Use NULL if you don’t want to paginate with
+               an end bookmark.
     @param count Request totalCount to be included in paginated response. By default, totalCount
                  is omitted.
     @return #PNR_STARTED on success, an error otherwise
@@ -250,6 +308,7 @@ PUBNUB_EXTERN enum pubnub_res pubnub_get_members(pubnub_t* pb,
                                    char const* start,
                                    char const* end,
                                    enum pubnub_tribool count);
+
 
 
 /** Adds the list of members of the channel specified with @p channel_metadataid. Uses the `add`
