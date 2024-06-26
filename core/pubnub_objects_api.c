@@ -39,11 +39,12 @@ do {                                                                            
 } while(0)
 
 
-enum pubnub_res pubnub_getall_uuidmetadata(pubnub_t* pb, 
+enum pubnub_res pubnub_getall_uuidmetadata_with_filter(pubnub_t* pb, 
                                  char const* include, 
                                  size_t limit,
                                  char const* start,
                                  char const* end,
+                                 char const* filter,
                                  enum pubnub_tribool count)
 {
     enum pubnub_res rslt;
@@ -61,6 +62,7 @@ enum pubnub_res pubnub_getall_uuidmetadata(pubnub_t* pb,
                                limit,
                                start,
                                end,
+                               filter,
                                count, 
                                pb->trans);
     if (PNR_STARTED == rslt) {
@@ -72,6 +74,16 @@ enum pubnub_res pubnub_getall_uuidmetadata(pubnub_t* pb,
     pubnub_mutex_unlock(pb->monitor);
 
     return rslt;
+}
+
+enum pubnub_res pubnub_getall_uuidmetadata(pubnub_t* pb, 
+                                 char const* include, 
+                                 size_t limit,
+                                 char const* start,
+                                 char const* end,
+                                 enum pubnub_tribool count)
+{
+    return pubnub_getall_uuidmetadata_with_filter(pb, include, limit, start, end, NULL, count);
 }
 
 
@@ -160,11 +172,12 @@ enum pubnub_res pubnub_remove_uuidmetadata(pubnub_t* pb, char const* uuid_metada
 }
 
 
-enum pubnub_res pubnub_getall_channelmetadata(pubnub_t* pb, 
+enum pubnub_res pubnub_getall_channelmetadata_with_filter(pubnub_t* pb, 
                                   char const* include, 
                                   size_t limit,
                                   char const* start,
                                   char const* end,
+                                  char const* filter,
                                   enum pubnub_tribool count)
 {
     enum pubnub_res rslt;
@@ -182,7 +195,8 @@ enum pubnub_res pubnub_getall_channelmetadata(pubnub_t* pb,
                                 limit,
                                 start,
                                 end,
-                                count, 
+                                filter,
+                                count,
                                 pb->trans);
     if (PNR_STARTED == rslt) {
         pb->trans            = PBTT_GETALL_CHANNELMETADATA;
@@ -195,6 +209,15 @@ enum pubnub_res pubnub_getall_channelmetadata(pubnub_t* pb,
     return rslt;
 }
 
+enum pubnub_res pubnub_getall_channelmetadata(pubnub_t* pb, 
+                                  char const* include, 
+                                  size_t limit,
+                                  char const* start,
+                                  char const* end,
+                                  enum pubnub_tribool count)
+{
+    return pubnub_getall_channelmetadata_with_filter(pb, include, limit, start, end, NULL, count);
+}
 
 enum pubnub_res pubnub_set_channelmetadata(pubnub_t* pb, 
                                     char const* channel_metadataid,
@@ -333,9 +356,10 @@ enum pubnub_res pubnub_get_memberships(pubnub_t* pb,
 }
 
 
-enum pubnub_res pubnub_set_memberships(pubnub_t* pb, 
+enum pubnub_res pubnub_set_memberships_with_filter(pubnub_t* pb, 
                                           char const* uuid_metadataid,
                                           char const* include,
+                                          char const* filter,
                                           char const* set_obj)
 {
     enum pubnub_res rslt;
@@ -361,6 +385,7 @@ enum pubnub_res pubnub_set_memberships(pubnub_t* pb,
     rslt = pbcc_set_memberships_prep(&pb->core,
                                         uuid_metadataid,
                                         include,
+                                        filter,
                                         set_obj, 
                                         pb->trans);
     if (PNR_STARTED == rslt) {
@@ -375,10 +400,18 @@ enum pubnub_res pubnub_set_memberships(pubnub_t* pb,
     return rslt;
 }
 
+enum pubnub_res pubnub_set_memberships(pubnub_t* pb, 
+                                          char const* uuid_metadataid,
+                                          char const* include,
+                                          char const* set_obj)
+{
+    return pubnub_set_memberships_with_filter(pb, uuid_metadataid, include, NULL, set_obj);
+}
 
-enum pubnub_res pubnub_remove_memberships(pubnub_t* pb, 
+enum pubnub_res pubnub_remove_memberships_with_filter(pubnub_t* pb, 
                                     char const* uuid_metadataid,
                                     char const* include,
+                                    char const* filter,
                                     char const* remove_obj)
 {
     enum pubnub_res rslt;
@@ -403,6 +436,7 @@ enum pubnub_res pubnub_remove_memberships(pubnub_t* pb,
     rslt = pbcc_set_memberships_prep(&pb->core,
                                         uuid_metadataid,
                                         include,
+                                        filter,
                                         remove_obj, 
                                         pb->trans);
     if (PNR_STARTED == rslt) {
@@ -417,6 +451,13 @@ enum pubnub_res pubnub_remove_memberships(pubnub_t* pb,
     return rslt;
 }
 
+enum pubnub_res pubnub_remove_memberships(pubnub_t* pb, 
+                                    char const* uuid_metadataid,
+                                    char const* include,
+                                    char const* remove_obj)
+{
+    return pubnub_remove_memberships_with_filter(pb, uuid_metadataid, include, NULL, remove_obj);
+}
 
 enum pubnub_res pubnub_get_members_with_filter(pubnub_t* pb,
                                    char const* channel_metadataid,
@@ -468,9 +509,10 @@ enum pubnub_res pubnub_get_members(pubnub_t* pb,
     return pubnub_get_members_with_filter(pb, channel_metadataid, include, limit, start, end, NULL, count);
 }
 
-enum pubnub_res pubnub_add_members(pubnub_t* pb, 
+enum pubnub_res pubnub_add_members_with_filter(pubnub_t* pb, 
                                    char const* channel_metadataid,
                                    char const* include,
+                                   char const* filter,
                                    char const* update_obj)
 {
     char obj_buffer[PUBNUB_BUF_MAXLEN];
@@ -494,6 +536,7 @@ enum pubnub_res pubnub_add_members(pubnub_t* pb,
     rslt = pbcc_set_members_prep(&pb->core,
                                     channel_metadataid,
                                     include,
+                                    filter,
                                     update_obj, 
                                     pb->trans);
     if (PNR_STARTED == rslt) {
@@ -508,10 +551,18 @@ enum pubnub_res pubnub_add_members(pubnub_t* pb,
     return rslt;
 }
 
+enum pubnub_res pubnub_add_members(pubnub_t* pb, 
+                                   char const* channel_metadataid,
+                                   char const* include,
+                                   char const* update_obj)
+{
+    return pubnub_add_members_with_filter(pb, channel_metadataid, include, NULL, update_obj);
+}
 
-enum pubnub_res pubnub_set_members(pubnub_t* pb, 
+enum pubnub_res pubnub_set_members_with_filter(pubnub_t* pb, 
                                       char const* channel_metadataid,
                                       char const* include,
+                                      char const* filter,
                                       char const* set_obj)
 {
     enum pubnub_res rslt;
@@ -536,6 +587,7 @@ enum pubnub_res pubnub_set_members(pubnub_t* pb,
     rslt = pbcc_set_members_prep(&pb->core,
                                     channel_metadataid,
                                     include,
+                                    filter,
                                     set_obj, 
                                     pb->trans);
     if (PNR_STARTED == rslt) {
@@ -550,10 +602,18 @@ enum pubnub_res pubnub_set_members(pubnub_t* pb,
     return rslt;
 }
 
-
-enum pubnub_res pubnub_remove_members(pubnub_t* pb, 
+enum pubnub_res pubnub_set_members(pubnub_t* pb, 
                                       char const* channel_metadataid,
                                       char const* include,
+                                      char const* set_obj)
+{
+    return pubnub_set_members_with_filter(pb, channel_metadataid, include, NULL, set_obj);
+}
+
+enum pubnub_res pubnub_remove_members_with_filter(pubnub_t* pb, 
+                                      char const* channel_metadataid,
+                                      char const* include,
+                                      char const* filter,
                                       char const* remove_obj)
 {
     enum pubnub_res rslt;
@@ -578,6 +638,7 @@ enum pubnub_res pubnub_remove_members(pubnub_t* pb,
     rslt = pbcc_set_members_prep(&pb->core,
                                     channel_metadataid,
                                     include,
+                                    filter,
                                     remove_obj, 
                                     pb->trans);
     if (PNR_STARTED == rslt) {
@@ -590,6 +651,14 @@ enum pubnub_res pubnub_remove_members(pubnub_t* pb,
     pubnub_mutex_unlock(pb->monitor);
 
     return rslt;
+}
+
+enum pubnub_res pubnub_remove_members(pubnub_t* pb, 
+                                      char const* channel_metadataid,
+                                      char const* include,
+                                      char const* remove_obj)
+{
+    return pubnub_remove_members_with_filter(pb, channel_metadataid, include, NULL, remove_obj);
 }
 
 #endif /* PUBNUB_USE_OBJECTS_API */

@@ -24,6 +24,32 @@
     @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if you
                also supply the start parameter. Use NULL if you don’t want to paginate with an
                end bookmark.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned.
+                  The filter language is defined in online documentation.
+    @param count Request totalCount to be included in paginated response. By default, totalCount
+                 is omitted.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_getall_uuidmetadata_with_filter(pubnub_t* pb,
+                                 char const* include, 
+                                 size_t limit,
+                                 char const* start,
+                                 char const* end,
+                                 char const* filter,
+                                 enum pubnub_tribool count);
+
+/** Returns a paginated list of metadata objects for users associated with the subscription key of the context @p pbp,
+    optionally including each record's custom data object.
+    @param pb The pubnub context. Can't be NULL
+    @param include The comma delimited (C) string with additional/complex user attributes to include in
+                   response. Use NULL if you don't want to retrieve additional attributes.
+    @param limit Number of entities to return in response. Regular values 1 - 100. If you set `0`,
+                 that means “use the default”. At the time of this writing, default was 100.
+    @param start Previously-returned cursor bookmark for fetching the next page. Use NULL if you
+                 don’t want to paginate with a start bookmark.
+    @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if you
+               also supply the start parameter. Use NULL if you don’t want to paginate with an
+               end bookmark.
     @param count Request totalCount to be included in paginated response. By default, totalCount
                  is omitted.
     @return #PNR_STARTED on success, an error otherwise
@@ -67,13 +93,39 @@ PUBNUB_EXTERN enum pubnub_res pubnub_get_uuidmetadata(pubnub_t* pb,
                                 char const* uuid_metadataid);
 
 
-
 /** Deletes the uuid metadata specified with @p uuid_metadataid.
     @param pb The pubnub context. Can't be NULL
     @param uuid_metadataid The UUID Metatdata ID. Cannot be NULL.
     @return #PNR_STARTED on success, an error otherwise
   */
 PUBNUB_EXTERN enum pubnub_res pubnub_remove_uuidmetadata(pubnub_t* pb, char const* uuid_metadataid);
+
+
+/** Returns the spaces associated with the subscriber key of the context @p pbp, optionally
+    including each space's custom data object.
+    @param pb The pubnub context. Can't be NULL
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param limit Number of entities to return in response. Regular values 1 - 100. If you set `0`,
+                 that means “use the default”. At the time of this writing, default was 100.
+    @param start Previously-returned cursor bookmark for fetching the next page. Use NULL if you
+                 don’t want to paginate with a start bookmark.
+    @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if
+               you also supply the start parameter. Use NULL if you don’t want to paginate with
+               an end bookmark.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned.
+                  The filter language is defined in online documentation.
+    @param count Request totalCount to be included in paginated response. By default, totalCount
+                 is omitted.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_getall_channelmetadata_with_filter(pubnub_t* pb, 
+                                  char const* include, 
+                                  size_t limit,
+                                  char const* start,
+                                  char const* end,
+                                  char const* filter,
+                                  enum pubnub_tribool count);
 
 
 /** Returns the spaces associated with the subscriber key of the context @p pbp, optionally
@@ -152,7 +204,8 @@ PUBNUB_EXTERN enum pubnub_res pubnub_remove_channelmetadata(pubnub_t* pb, char c
     @param end Previously-returned cursor bookmark for fetching the previous page. Ignored if
                you also supply the start parameter. Use NULL if you don’t want to paginate with
                an end bookmark.
-    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned. The filter language is defined in online documentation.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned.
+                  The filter language is defined in online documentation.
     @param count Request totalCount to be included in paginated response. By default, totalCount
                  is omitted.
     @return #PNR_STARTED on success, an error otherwise
@@ -218,6 +271,42 @@ PUBNUB_EXTERN enum pubnub_res pubnub_get_memberships(pubnub_t* pb,
                    Cannot be NULL.
     @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
                    Use NULL if you don't want to retrieve additional attributes.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned.
+					        The filter language is defined in online documentation.
+    @param set_obj The JSON object that defines the add/update to perform.
+                      Cannot be NULL.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_set_memberships_with_filter(pubnub_t* pb, 
+                                          char const* uuid_metadataid,
+                                          char const* include,
+                                          char const* filter,
+                                          char const* set_obj);
+
+
+/** Add/Update the channel memberships of the UUID specified by @p metadata_uuid. Uses the `set` property
+    to perform those operations on one, or more memberships.
+    An example for @set_obj:
+       [
+         {
+           "channel":{ "id": "main-channel-id" },
+           "custom": {
+             "starred": true
+           }
+         },
+         {
+           "channel":{ "id": "channel-0" },
+            "some_key": {
+              "other_key": "other_value"
+            }
+         }
+       ]
+
+    @param pb The pubnub context. Can't be NULL
+    @param uuid_metadataid The UUID to add/update the memberships.
+                   Cannot be NULL.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
     @param set_obj The JSON object that defines the add/update to perform.
                       Cannot be NULL.
     @return #PNR_STARTED on success, an error otherwise
@@ -226,6 +315,36 @@ PUBNUB_EXTERN enum pubnub_res pubnub_set_memberships(pubnub_t* pb,
                                           char const* uuid_metadataid,
                                           char const* include,
                                           char const* set_obj);
+
+
+/** Removes the memberships of the user specified by @p uuid_metadataid. Uses the `delete` property
+    to perform those operations on one, or more memberships.
+    An example for @remove_obj:
+      [
+        {
+          "id": "main-channel-id"
+        },
+        {
+          "id": "channel-0"
+        }
+      ]
+
+    @param pb The pubnub context. Can't be NULL
+    @param uuid_metadataid The UUID to remove the memberships.
+                   Cannot be NULL.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned.
+					        The filter language is defined in online documentation.
+    @param remove_obj The JSON object that defines the remove to perform.
+                      Cannot be NULL.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_remove_memberships_with_filter(pubnub_t* pb, 
+                                    char const* uuid_metadataid,
+                                    char const* include,
+                                    char const* filter,
+                                    char const* remove_obj);
 
 
 /** Removes the memberships of the user specified by @p uuid_metadataid. Uses the `delete` property
@@ -310,6 +429,33 @@ PUBNUB_EXTERN enum pubnub_res pubnub_get_members(pubnub_t* pb,
                                    enum pubnub_tribool count);
 
 
+/** Adds the list of members of the channel specified with @p channel_metadataid. Uses the `add`
+    property to perform the operation on one or more members.
+    An example for @add_obj:
+       [
+         {
+           "id": "some-user-id"
+         },
+         {
+           "id": "user-0-id"
+         }
+       ]
+
+    @param pb The pubnub context. Can't be NULL
+    @param channel_metadataid The Channel ID.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param filter Expression used to filter the results. Only objects whose properties satisfy the given expression are returned.
+					        The filter language is defined in online documentation.
+    @param add_obj The JSON object that defines the add to perform. Cannot be NULL.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_add_members_with_filter(pubnub_t* pb, 
+                                   char const* channel_metadataid,
+                                   char const* include,
+                                   char const* filter,
+                                   char const* add_obj);
+
 
 /** Adds the list of members of the channel specified with @p channel_metadataid. Uses the `add`
     property to perform the operation on one or more members.
@@ -361,10 +507,71 @@ PUBNUB_EXTERN enum pubnub_res pubnub_add_members(pubnub_t* pb,
     @param set_obj The JSON object that defines the add/update to perform. Cannot be NULL.
     @return #PNR_STARTED on success, an error otherwise
   */
+PUBNUB_EXTERN enum pubnub_res pubnub_set_members_with_filter(pubnub_t* pb, 
+                                      char const* channel_metadataid,
+                                      char const* include,
+                                      char const* filter,
+                                      char const* set_obj);
+
+
+/** Updates the list of members of the space specified with @p space_id. Uses the `update`
+    property to perform the operation on one or more members.
+    An example for @set_obj:
+       [
+         {
+           "id": "some-user-id",
+           "custom": {
+             "starred": true
+           }
+         },
+         {
+           "id": "user-0-id",
+            "some_key": {
+              "other_key": "other_value"
+            }
+         }
+       ]
+
+    @param pb The pubnub context. Can't be NULL
+    @param channel_metadataid The Channel ID for which to add/update the user metadata.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param set_obj The JSON object that defines the add/update to perform. Cannot be NULL.
+    @return #PNR_STARTED on success, an error otherwise
+  */
 PUBNUB_EXTERN enum pubnub_res pubnub_set_members(pubnub_t* pb, 
                                       char const* channel_metadataid,
                                       char const* include,
                                       char const* set_obj);
+
+
+/** Removes the list of members of the space specified with @p space_id. Uses the `remove`
+    property to perform the operation on one or more members.
+    An example for @update_obj:
+      [
+        {
+          "id": "some-user-id",
+          "custom": {
+            "starred": true
+          }
+        },
+        {
+          "id": "user-0-id"
+        }
+      ]
+
+    @param pb The pubnub context. Can't be NULL
+    @param channel_metadataid The Channel ID.
+    @param include array of (C) strings in comma delimited format with additional/complex attributes to include in response.
+                   Use NULL if you don't want to retrieve additional attributes.
+    @param remove_obj The JSON object that defines the remove to perform. Cannot be NULL.
+    @return #PNR_STARTED on success, an error otherwise
+  */
+PUBNUB_EXTERN enum pubnub_res pubnub_remove_members_with_filter(pubnub_t* pb, 
+                                      char const* channel_metadataid,
+                                      char const* include,
+                                      char const* filter,
+                                      char const* remove_obj);
 
 
 /** Removes the list of members of the space specified with @p space_id. Uses the `remove`

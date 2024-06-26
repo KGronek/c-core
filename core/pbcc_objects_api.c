@@ -76,6 +76,7 @@ enum pubnub_res pbcc_getall_uuidmetadata_prep(
                                     size_t limit,
                                     char const* start,
                                     char const* end,
+                                    char const* filter,
                                     enum pubnub_tribool count,
                                     enum pubnub_trans pt)
 {
@@ -99,6 +100,7 @@ enum pubnub_res pbcc_getall_uuidmetadata_prep(
     if (limit != 0) { ADD_URL_PARAM_SIZET(qparam, limit, limit); }
     if (start != NULL) { ADD_URL_PARAM(qparam, start, start); }
     if (end != NULL)   { ADD_URL_PARAM(qparam, end, end); }
+    if (filter) { ADD_URL_PARAM(qparam, filter, filter); }
 
     if (count != pbccNotSet) { ADD_URL_PARAM(qparam, count, count == pbccTrue ? "true" : "false"); }
 
@@ -291,6 +293,7 @@ enum pubnub_res pbcc_getall_channelmetadata_prep(struct pbcc_context* pb,
                                      size_t limit,
                                      char const* start,
                                      char const* end,
+                                     char const* filter,
                                      enum pubnub_tribool count,
                                      enum pubnub_trans pt)
 {
@@ -314,6 +317,7 @@ enum pubnub_res pbcc_getall_channelmetadata_prep(struct pbcc_context* pb,
 
     if (start != NULL) { ADD_URL_PARAM(qparam, start, start); }
     if (end != NULL) { ADD_URL_PARAM(qparam, end, end); }
+    if (filter) { ADD_URL_PARAM(qparam, filter, filter); }
 
     if (count != pbccNotSet) { ADD_URL_PARAM(qparam, count, count == pbccTrue ? "true" : "false"); }
     if (user_id) { ADD_URL_PARAM(qparam, uuid, user_id); }
@@ -575,6 +579,7 @@ enum pubnub_res pbcc_get_memberships_prep(struct pbcc_context* pb,
 enum pubnub_res pbcc_set_memberships_prep(struct pbcc_context* pb,
                                              char const* uuid_metadataid,
                                              char const* include,
+                                             char const* filter,
                                              char const* set_obj,
                                              enum pubnub_trans pt)
 {
@@ -608,6 +613,7 @@ enum pubnub_res pbcc_set_memberships_prep(struct pbcc_context* pb,
 #endif
 
     if (include) { ADD_URL_PARAM(qparam, include, include); }
+    if (filter) { ADD_URL_PARAM(qparam, filter, filter); }
 
 #if PUBNUB_CRYPTO_API
   SORT_URL_PARAMETERS(qparam);
@@ -698,6 +704,7 @@ enum pubnub_res pbcc_get_members_prep(struct pbcc_context* pb,
 enum pubnub_res pbcc_set_members_prep(struct pbcc_context* pb,
                                          char const* channel_metadataid,
                                          char const* include,
+                                         char const* filter,
                                          char const* set_obj, 
                                          enum pubnub_trans pt)
 {
@@ -732,6 +739,7 @@ enum pubnub_res pbcc_set_members_prep(struct pbcc_context* pb,
 #endif
 
     if (include) { ADD_URL_PARAM(qparam, include, include); }
+    if (filter) { ADD_URL_PARAM(qparam, filter, filter); }
 
 #if PUBNUB_CRYPTO_API
   SORT_URL_PARAMETERS(qparam);
